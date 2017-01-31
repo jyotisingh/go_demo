@@ -3,7 +3,7 @@
   <server artifactsdir="logs" agentAutoRegisterKey="041b5c7e-dab2-11e5-a908-13f95f3c6ef6" commandRepositoryLocation="default" serverId="dev-id">
     <security>
       <passwordFile path="/etc/go/password.properties" />
-      <roles>
+<roles>
         <role name="project_manager">
           <users>
             <user>martin</user>
@@ -66,6 +66,9 @@
                 <arg>test</arg>
               </exec>
             </tasks>
+            <artifacts>
+              <test src="target/surefire-reports/" />
+            </artifacts>
           </job>
           <job name="integration_test">
             <tasks>
@@ -74,6 +77,9 @@
                 <arg>test</arg>
               </exec>
             </tasks>
+            <artifacts>
+              <test src="target/surefire-reports/" />
+            </artifacts>
           </job>
         </jobs>
       </stage>
@@ -109,7 +115,7 @@
         <jobs>
           <job name="defaultJob">
             <tasks>
-              <exec command="ls" />
+              <exec command="./run_acceptance_tests.rb" />
             </tasks>
           </job>
         </jobs>
@@ -124,7 +130,7 @@
         <jobs>
           <job name="defaultJob">
             <tasks>
-              <exec command="ls" />
+              <exec command="./run_acceptance_tests.rb" />
             </tasks>
           </job>
         </jobs>
@@ -143,11 +149,11 @@
               <fetchartifact pipeline="installers/regression_tests" stage="defaultStage" job="defaultJob" srcdir="distribution">
                 <runif status="passed" />
               </fetchartifact>
-              <exec command="ls" />
+              <exec command="./publish_installers.rb" />
             </tasks>
             <artifacts>
               <artifact src="distribution" />
-            </artifacts>            
+            </artifacts>
           </job>
         </jobs>
       </stage>
@@ -163,21 +169,29 @@
       </admins>
     </authorization>
     <pipeline name="deploy_to_qa" template="deploy_and_test">
+      <params>
+        <param name="INSTALLER_PIPELINE">publish_installers</param>
+      </params>
       <materials>
-        <git url="git://localhost/deployment_scripts" />
+        <git url="git://localhost/deployment_scripts" dest="deployment_scripts" />
+        <git url="git://localhost/functional_tests" dest="functional_tests" />
         <pipeline pipelineName="publish_installers" stageName="defaultStage" />
       </materials>
     </pipeline>
     <pipeline name="performance_tests">
       <materials>
-        <git url="git://localhost/performance" />
+        <git url="git://localhost/deployment_scripts" dest="deployment_scripts" />
+        <git url="git://localhost/performance" dest="performance" />
         <pipeline pipelineName="publish_installers" stageName="defaultStage" />
       </materials>
       <stage name="deploy">
         <jobs>
           <job name="defaultJob">
             <tasks>
-              <exec command="ls" />
+              <fetchartifact pipeline="publish_installers" stage="defaultStage" job="defaultJob" srcdir="distribution">
+                <runif status="passed" />
+              </fetchartifact>
+              <exec command="./deploy.rb" workingdir="deployment_scripts" />
             </tasks>
           </job>
         </jobs>
@@ -186,7 +200,7 @@
         <jobs>
           <job name="defaultJob">
             <tasks>
-              <exec command="ls" />
+              <exec command="./configure.rb" workingdir="deployment_scripts" />
             </tasks>
           </job>
         </jobs>
@@ -195,13 +209,13 @@
         <jobs>
           <job name="defaultJob">
             <tasks>
-              <exec command="ls" />
+              <exec command="./run_jmeter_tests.rb" workingdir="performance" />
             </tasks>
             <tabs>
               <tab name="jmeter-report" path="reports/index.html" />
             </tabs>
             <artifacts>
-              <artifact src="reports" />
+              <artifact src="performance/reports" />
             </artifacts>
           </job>
         </jobs>
@@ -218,13 +232,13 @@
       </admins>
     </authorization>
     <pipeline name="deploy_to_prod" template="deploy_and_test">
+      <params>
+        <param name="INSTALLER_PIPELINE">publish_installers/deploy_to_qa</param>
+      </params>
       <materials>
-        <git url="git://localhost/deployment_scripts">
-          <filter>
-            <ignore pattern="**/*" />
-          </filter>
-        </git>
-        <pipeline pipelineName="deploy_to_qa" stageName="run_sanity_tests" />
+        <git url="git://localhost/deployment_scripts" dest="deployment_scripts" />
+        <git url="git://localhost/functional_tests" dest="functional_tests" />
+        <pipeline pipelineName="deploy_to_qa" stageName="run_user_tests" />
         <pipeline pipelineName="performance_tests" stageName="benchmark" />
       </materials>
     </pipeline>
@@ -242,10 +256,10 @@
         <jobs>
           <job name="defaultJob">
             <tasks>
-              <fetchartifact pipeline="publish_installers" stage="defaultStage" job="defaultJob" srcdir="distribution">
+              <fetchartifact pipeline="#{INSTALLER_PIPELINE}" stage="defaultStage" job="defaultJob" srcdir="distribution">
                 <runif status="passed" />
-              </fetchartifact>              
-              <exec command="ls" />
+              </fetchartifact>
+              <exec command="./deploy.rb" workingdir="deployment_scripts" />
             </tasks>
           </job>
         </jobs>
@@ -254,21 +268,20 @@
         <jobs>
           <job name="defaultJob">
             <tasks>
-              <exec command="ls" />
+              <exec command="./configure.rb" workingdir="deployment_scripts" />
             </tasks>
           </job>
         </jobs>
       </stage>
-      <stage name="run_sanity_tests">
+      <stage name="run_user_tests">
         <jobs>
           <job name="defaultJob">
             <tasks>
-              <exec command="ls" />
+              <exec command="./run_user_tests.rb" workingdir="functional_tests" />
             </tasks>
           </job>
         </jobs>
       </stage>
     </pipeline>
-  </templates>
+  </templates>      
 </cruise>
-

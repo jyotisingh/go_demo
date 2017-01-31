@@ -16,10 +16,14 @@ Vagrant.configure(2) do |config|
         vm_config.vm.provision "shell", inline: "add-apt-repository 'deb https://apt.dockerproject.org/repo/ ubuntu-trusty main'"    
         vm_config.vm.provision "shell", inline: "apt-get update"
         vm_config.vm.provision "shell", inline: "apt-get install -y rake openjdk-8-jdk unzip git wget maven2 docker-engine go-server go-agent"
+        vm_config.vm.provision "shell", inline: "update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-8-openjdk-amd64/bin/java 1"
+        vm_config.vm.provision "shell", inline: "update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/bin/java"
         vm_config.vm.provision "shell", inline: "/etc/init.d/go-server stop"    
         vm_config.vm.provision "shell", inline: "cp /vagrant/setup/local-git-daemon.conf /etc/init/local-git-daemon.conf"        
-        vm_config.vm.provision "shell", inline: "cp /vagrant/config/* /etc/go/"
-        vm_config.vm.provision "shell", inline: "cp /vagrant/db/* /var/lib/go-server/db/h2db/"
+        vm_config.vm.provision "shell", inline: "cp -r /vagrant/config/ /etc/go/"
+        vm_config.vm.provision "shell", inline: "cp -r /vagrant/db/ /var/lib/go-server/db/h2db/"
+        vm_config.vm.provision "shell", inline: "wget https://github.com/gocd-contrib/docker-elastic-agents/releases/download/v0.6.1/docker-elastic-agents-0.6.1.jar -O /var/lib/go-server/plugins/external/docker-elastic-agents-0.6.1.jar"
+        vm_config.vm.provision "shell", inline: "chown go:go /var/lib/go-server/plugins/external/*"
         vm_config.vm.provision "shell", inline: "/etc/init.d/go-server start"    
 
 
