@@ -4,7 +4,7 @@
 Vagrant.configure(2) do |config|
     config.vm.define "gocd-demo" do |vm_config|
         vm_config.vm.network "private_network", type: "dhcp"
-        vm_config.vm.network "forwarded_port", guest: 8143, host: 8153
+        vm_config.vm.network "forwarded_port", guest: 8153, host: 8153
         vm_config.vm.network "forwarded_port", guest: 8154, host: 8154
         vm_config.vm.provision "shell", inline: "apt-get update"
         vm_config.vm.provision "shell", inline: "apt-get install -y software-properties-common python-software-properties"
