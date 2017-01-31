@@ -3,26 +3,33 @@
   <server artifactsdir="logs" agentAutoRegisterKey="041b5c7e-dab2-11e5-a908-13f95f3c6ef6" commandRepositoryLocation="default" serverId="dev-id">
     <security>
       <passwordFile path="/etc/go/password.properties" />
-<roles>
+      <roles>
         <role name="project_manager">
           <users>
             <user>martin</user>
+            <user>pm1</user>
           </users>
         </role>
         <role name="deployers">
           <users>
             <user>bhagat</user>
+            <user>deployer1</user>
+            <user>deploy1</user>
           </users>
         </role>
         <role name="testers">
           <users>
             <user>david</user>
+            <user>tester1</user>
+            <user>qa1</user>
           </users>
         </role>
         <role name="developers">
           <users>
             <user>mary</user>
             <user>tom</user>
+            <user>developer1</user>
+            <user>dev1</user>
           </users>
         </role>
       </roles>
@@ -248,7 +255,11 @@
       <authorization>
         <admins>
           <user>david</user>
+          <user>tester1</user>
+          <user>qa1</user>
           <user>bhagat</user>
+          <user>deployer1</user>
+          <user>deploy1</user>
         </admins>
       </authorization>
       <stage name="deploy">
@@ -283,5 +294,5 @@
         </jobs>
       </stage>
     </pipeline>
-  </templates>      
+  </templates>
 </cruise>
