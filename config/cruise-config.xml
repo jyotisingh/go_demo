@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="88">
+  <server artifactsdir="logs" agentAutoRegisterKey="041b5c7e-dab2-11e5-a908-13f95f3c6ef6" commandRepositoryLocation="default" serverId="dev-id">
+    <security>
+      <passwordFile path="/etc/go/password.properties" />
+      <roles>
+        <role name="project_manager">
+          <users>
+            <user>martin</user>
+          </users>
+        </role>
+        <role name="deployers">
+          <users>
+            <user>bhagat</user>
+          </users>
+        </role>
+        <role name="testers">
+          <users>
+            <user>david</user>
+          </users>
+        </role>
+        <role name="developers">
+          <users>
+            <user>mary</user>
+            <user>tom</user>
+          </users>
+        </role>
+      </roles>
+      <admins>
+        <user>admin</user>
+      </admins>
+    </security>
+  </server>
+  <pipelines group="Development">
+    <authorization>
+      <view>
+        <role>project_manager</role>
+      </view>
+      <admins>
+        <role>developers</role>
+      </admins>
+    </authorization>
+    <pipeline name="build_and_test">
+      <materials>
+        <git url="git://localhost/main_repo" />
+      </materials>
+      <stage name="build">
+        <jobs>
+          <job name="build">
+            <tasks>
+              <exec command="mvn">
+                <arg>clean</arg>
+                <arg>compile</arg>
+                <arg>-DskipTests</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="test">
+        <jobs>
+          <job name="unit_test">
+            <tasks>
+              <exec command="mvn">
+                <arg>clean</arg>
+                <arg>test</arg>
+              </exec>
+            </tasks>
+          </job>
+          <job name="integration_test">
+            <tasks>
+              <exec command="mvn">
+                <arg>clean</arg>
+                <arg>test</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="installers">
+      <materials>
+        <git url="git://localhost/main_repo" />
+        <pipeline pipelineName="build_and_test" stageName="test" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="mvn">
+                <arg>clean</arg>
+                <arg>package</arg>
+                <arg>-DskipTests</arg>
+              </exec>
+            </tasks>
+            <artifacts>
+              <artifact src="target/*.jar" dest="distribution" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="acceptance_tests">
+      <materials>
+        <git url="git://localhost/functional_tests" />
+        <pipeline pipelineName="installers" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="ls" />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="regression_tests">
+      <materials>
+        <git url="git://localhost/functional_tests" />
+        <pipeline pipelineName="installers" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="ls" />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="publish_installers">
+      <materials>
+        <git url="git://localhost/publish_installers" />
+        <pipeline pipelineName="regression_tests" stageName="defaultStage" />
+        <pipeline pipelineName="acceptance_tests" stageName="defaultStage" />
+      </materials>
+      <stage name="defaultStage">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <fetchartifact pipeline="installers/regression_tests" stage="defaultStage" job="defaultJob" srcdir="distribution">
+                <runif status="passed" />
+              </fetchartifact>
+              <exec command="ls" />
+            </tasks>
+            <artifacts>
+              <artifact src="distribution" />
+            </artifacts>            
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <pipelines group="QualityGates">
+    <authorization>
+      <view>
+        <role>project_manager</role>
+      </view>
+      <admins>
+        <role>testers</role>
+      </admins>
+    </authorization>
+    <pipeline name="deploy_to_qa" template="deploy_and_test">
+      <materials>
+        <git url="git://localhost/deployment_scripts" />
+        <pipeline pipelineName="publish_installers" stageName="defaultStage" />
+      </materials>
+    </pipeline>
+    <pipeline name="performance_tests">
+      <materials>
+        <git url="git://localhost/performance" />
+        <pipeline pipelineName="publish_installers" stageName="defaultStage" />
+      </materials>
+      <stage name="deploy">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="ls" />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="configure">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="ls" />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="benchmark">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="ls" />
+            </tasks>
+            <tabs>
+              <tab name="jmeter-report" path="reports/index.html" />
+            </tabs>
+            <artifacts>
+              <artifact src="reports" />
+            </artifacts>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <pipelines group="Production">
+    <authorization>
+      <view>
+        <role>project_manager</role>
+      </view>
+      <admins>
+        <role>deployers</role>
+      </admins>
+    </authorization>
+    <pipeline name="deploy_to_prod" template="deploy_and_test">
+      <materials>
+        <git url="git://localhost/deployment_scripts">
+          <filter>
+            <ignore pattern="**/*" />
+          </filter>
+        </git>
+        <pipeline pipelineName="deploy_to_qa" stageName="run_sanity_tests" />
+        <pipeline pipelineName="performance_tests" stageName="benchmark" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="deploy_and_test">
+      <authorization>
+        <admins>
+          <user>david</user>
+          <user>bhagat</user>
+        </admins>
+      </authorization>
+      <stage name="deploy">
+        <approval type="manual" />
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <fetchartifact pipeline="publish_installers" stage="defaultStage" job="defaultJob" srcdir="distribution">
+                <runif status="passed" />
+              </fetchartifact>              
+              <exec command="ls" />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="configure">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="ls" />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="run_sanity_tests">
+        <jobs>
+          <job name="defaultJob">
+            <tasks>
+              <exec command="ls" />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+</cruise>
+

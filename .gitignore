@@ -1,0 +1,3 @@
+.vagrant/*
+db/*
+**/.DS_Store
