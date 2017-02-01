@@ -262,6 +262,17 @@
           <user>deploy1</user>
         </admins>
       </authorization>
+      <stage name="ready-to-deploy">
+        <jobs>
+          <job name="do-nothing">
+            <tasks>
+              <exec command="echo">
+                <arg>Ready to deploy</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
       <stage name="deploy">
         <approval type="manual" />
         <jobs>
@@ -289,6 +300,18 @@
           <job name="defaultJob">
             <tasks>
               <exec command="./run_user_tests.rb" workingdir="functional_tests" />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="rollback">
+        <approval type="manual" />
+        <jobs>
+          <job name="do-rollback">
+            <tasks>
+              <exec command="echo">
+                <arg>I can roll back here</arg>
+              </exec>
             </tasks>
           </job>
         </jobs>
