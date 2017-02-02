@@ -22,10 +22,20 @@ Vagrant.configure(2) do |config|
         vm_config.vm.provision "shell", inline: "cp /vagrant/setup/local-git-daemon.conf /etc/init/local-git-daemon.conf"        
         vm_config.vm.provision "shell", inline: "initctl start local-git-daemon"    
         vm_config.vm.provision "shell", inline: "cp /vagrant/config/* /etc/go/"
-        vm_config.vm.provision "shell", inline: "cp /vagrant/db/* /var/lib/go-server/db/h2db/"
         vm_config.vm.provision "shell", inline: "wget https://github.com/gocd-contrib/docker-elastic-agents/releases/download/v0.6.1/docker-elastic-agents-0.6.1.jar -O /var/lib/go-server/plugins/external/docker-elastic-agents-0.6.1.jar"
-        vm_config.vm.provision "shell", inline: "chown go:go /var/lib/go-server/plugins/external/*"
-        vm_config.vm.provision "shell", inline: "/etc/init.d/go-server start"    
+        vm_config.vm.provision "shell", inline: "chown -R go:go /etc/go/"
+        vm_config.vm.provision "shell", inline: "chown -R go:go /var/go/"
+        vm_config.vm.provision "shell", inline: "chown -R go:go /var/lib/go-server/"
+        vm_config.vm.provision "shell", inline: "cp /etc/init.d/go-agent /etc/init.d/go-agent-1"
+        vm_config.vm.provision "shell", inline: "sed -i 's/# Provides: go-agent$/# Provides: go-agent-1/g' /etc/init.d/go-agent-1"
+        vm_config.vm.provision "shell", inline: "ln -s /usr/share/go-agent /usr/share/go-agent-1"
+        vm_config.vm.provision "shell", inline: "cp -p /etc/default/go-agent /etc/default/go-agent-1"
+        vm_config.vm.provision "shell", inline: "mkdir /var/{lib,log}/go-agent-1"
+        vm_config.vm.provision "shell", inline: "chown go:go /var/{lib,log}/go-agent-1"
+        vm_config.vm.provision "shell", inline: "update-rc.d go-agent-1 defaults"
+        vm_config.vm.provision "shell", inline: "/etc/init.d/go-server start"   
+        vm_config.vm.provision "shell", inline: "/etc/init.d/go-agent start"     
+        vm_config.vm.provision "shell", inline: "/etc/init.d/go-agent-1 start"
 
 
       vm_config.vm.provider :virtualbox do |vb, override|

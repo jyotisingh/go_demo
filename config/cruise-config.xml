@@ -42,6 +42,8 @@
     <authorization>
       <view>
         <role>project_manager</role>
+        <role>testers</role>
+        <role>deployers</role>
       </view>
       <admins>
         <role>developers</role>
@@ -170,6 +172,8 @@
     <authorization>
       <view>
         <role>project_manager</role>
+        <role>developers</role>
+        <role>deployers</role>
       </view>
       <admins>
         <role>testers</role>
@@ -233,6 +237,8 @@
     <authorization>
       <view>
         <role>project_manager</role>
+        <role>developers</role>
+        <role>testers</role>
       </view>
       <admins>
         <role>deployers</role>
