@@ -19,6 +19,7 @@ Vagrant.configure(2) do |config|
         vm_config.vm.provision "shell", inline: "update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-8-openjdk-amd64/bin/java 1"
         vm_config.vm.provision "shell", inline: "update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/bin/java"
         vm_config.vm.provision "shell", inline: "/etc/init.d/go-server stop"    
+        vm_config.vm.provision "shell", inline: "tar -xvf /vagrant/repos.tar.gz"    
         vm_config.vm.provision "shell", inline: "cp /vagrant/setup/local-git-daemon.conf /etc/init/local-git-daemon.conf"        
         vm_config.vm.provision "shell", inline: "initctl start local-git-daemon"    
         vm_config.vm.provision "shell", inline: "cp /vagrant/config/* /etc/go/"
