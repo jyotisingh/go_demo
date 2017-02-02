@@ -20,7 +20,6 @@ Vagrant.configure(2) do |config|
         vm_config.vm.provision "shell", inline: "update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/bin/java"
         vm_config.vm.provision "shell", inline: "/etc/init.d/go-server stop"    
         vm_config.vm.provision "shell", inline: "tar -xvf /vagrant/repos.tar.gz"    
-        vm_config.vm.provision "shell", inline: "cp /vagrant/setup/local-git-daemon.conf /etc/init/local-git-daemon.conf"        
         vm_config.vm.provision "shell", inline: "/usr/bin/git daemon --base-path=/home/vagrant/repos --export-all --enable=receive-pack --reuseaddr --informative-errors --verbose --detach"    
         vm_config.vm.provision "shell", inline: "cp /vagrant/config/* /etc/go/"
         vm_config.vm.provision "shell", inline: "wget https://github.com/gocd-contrib/docker-elastic-agents/releases/download/v0.6.1/docker-elastic-agents-0.6.1.jar -O /var/lib/go-server/plugins/external/docker-elastic-agents-0.6.1.jar"
