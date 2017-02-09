@@ -23,6 +23,7 @@ Vagrant.configure(2) do |config|
         vm_config.vm.provision "shell", inline: "chown -R vagrant:vagrant /home/vagrant/repos"    
         vm_config.vm.provision "shell", inline: "git config --global user.email go_demo@gmail.com"    
         vm_config.vm.provision "shell", inline: "git config --global user.name Go_Demo"    
+        vm_config.vm.provision "shell", inline: "cp /vagrant/setup/local-git-daemon.conf /etc/init/local-git-daemon.conf"        
         vm_config.vm.provision "shell", inline: "/usr/bin/git daemon --base-path=/home/vagrant/repos --export-all --enable=receive-pack --reuseaddr --informative-errors --verbose --detach"    
         vm_config.vm.provision "shell", inline: "cp /vagrant/config/* /etc/go/"
         vm_config.vm.provision "shell", inline: "wget https://github.com/gocd-contrib/docker-elastic-agents/releases/download/v0.6.1/docker-elastic-agents-0.6.1.jar -O /var/lib/go-server/plugins/external/docker-elastic-agents-0.6.1.jar"
