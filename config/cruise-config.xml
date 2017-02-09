@@ -6,28 +6,23 @@
       <roles>
         <role name="project_manager">
           <users>
-            <user>martin</user>
             <user>pm1</user>
           </users>
         </role>
         <role name="deployers">
           <users>
-            <user>bhagat</user>
             <user>deployer1</user>
             <user>deploy1</user>
           </users>
         </role>
         <role name="testers">
           <users>
-            <user>david</user>
             <user>tester1</user>
             <user>qa1</user>
           </users>
         </role>
         <role name="developers">
           <users>
-            <user>mary</user>
-            <user>tom</user>
             <user>developer1</user>
             <user>dev1</user>
           </users>
