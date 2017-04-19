@@ -54,6 +54,8 @@
             <tasks>
               <exec command="mvn">
                 <arg>clean</arg>
+              </exec>
+              <exec command="mvn">
                 <arg>compile</arg>
                 <arg>-DskipTests</arg>
               </exec>
