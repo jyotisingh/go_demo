@@ -6,9 +6,9 @@ Just run
 ```bash
 vagrant up
 ```
-from the checked out folder. This will bring up a VM with the server and agents running. Once the machine is up, you will be able to access the server from your browser [here](http://localhost:8153).
+from the checked out folder. This will bring up a VM with the server and agents running. Once the machine is up, you will be able to access the server from your browser [here](http://localhost:8153)http://localhost:8153.
 
-There are a few repositories setup under ``/home/vagrant/repos` which are used by the pre-configured pipelines. You should be able to add new commits to them to trigger new builds in Go.
+There are a few repositories setup under `/home/vagrant/repos` which are used by the pre-configured pipelines. You should be able to add new commits to them to trigger new builds in Go.
 
 For the demo purposes we have added two shell scripts `pass.sh` and `fail.sh` under the root folder of this project. For the purposes of the demo, if you would like to automatically trigger a build by performing a commit, you can first run the
 ```bash
