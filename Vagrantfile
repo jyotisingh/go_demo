@@ -3,7 +3,7 @@
 
 Vagrant.configure(2) do |config|
     config.vm.define "gocd-demo" do |vm_config|
-        vm_config.vm.network "private_network", type: "dhcp", ip: "172.28.128.5"
+        vm_config.vm.network "private_network", ip: "172.28.128.5"
         vm_config.vm.network "forwarded_port", guest: 8153, host: 8153
         vm_config.vm.network "forwarded_port", guest: 8154, host: 8154
         vm_config.vm.provision "shell", inline: "apt-get update"
