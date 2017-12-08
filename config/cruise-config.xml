@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="88">
-  <server artifactsdir="artifacts" agentAutoRegisterKey="041b5c7e-dab2-11e5-a908-13f95f3c6ef6" commandRepositoryLocation="default" serverId="dev-id">
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="97">
+  <server artifactsdir="artifacts" agentAutoRegisterKey="041b5c7e-dab2-11e5-a908-13f95f3c6ef6" webhookSecret="3ff96d8b-4206-4f25-bdbb-a8fb24eb7138" commandRepositoryLocation="default" serverId="dev-id">
     <security>
-      <passwordFile path="/etc/go/password.properties" />
+      <authConfigs>
+        <authConfig id="43346d28-0ecb-4979-a929-99b7ae52eb26" pluginId="cd.go.authentication.passwordfile">
+          <property>
+            <key>PasswordFilePath</key>
+            <value>/etc/go/password.properties</value>
+          </property>
+        </authConfig>
+      </authConfigs>
       <roles>
         <role name="project_manager">
           <users>
@@ -33,6 +40,11 @@
       </admins>
     </security>
   </server>
+  <config-repos>
+    <config-repo pluginId="json.config.plugin" id="foo">
+      <git url="https://github.com/jyotisingh/go_demo.git" />
+    </config-repo>
+  </config-repos>
   <pipelines group="Development">
     <authorization>
       <view>
@@ -253,6 +265,16 @@
       </materials>
     </pipeline>
   </pipelines>
+  <pipelines group="Post-Production">
+    <authorization>
+      <view>
+        <user>admin</user>
+      </view>
+      <admins>
+        <user>admin</user>
+      </admins>
+    </authorization>
+  </pipelines>
   <templates>
     <pipeline name="deploy_and_test">
       <authorization>
@@ -321,4 +343,8 @@
       </stage>
     </pipeline>
   </templates>
+  <agents>
+    <agent hostname="vagrant" ipaddress="127.0.0.1" uuid="48a69643-4963-42ef-838d-3ad7996af34c" />
+    <agent hostname="vagrant" ipaddress="127.0.0.1" uuid="a02c6780-21da-4dae-a1df-81aa0f3e8e4d" />
+  </agents>
 </cruise>

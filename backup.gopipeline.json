@@ -1,0 +1,46 @@
+{
+  "format_version" : 1,
+  "name": "backup_production_data",
+  "environment_variables": [],
+  "group" : "Post-Production",
+  "timer" : {
+    "spec": "0 0/3 * ? * *"
+  },
+  "materials": [
+    {
+      "url": "https://github.com/varshavaradarajan/backup_repo_for_go_demo.git",
+      "type": "git"
+    }
+  ],
+  "stages": [
+    {
+      "name": "backup_daily",
+      "fetch_materials": true,
+      "never_cleanup_artifacts": false,
+      "clean_working_directory": false,
+      "environment_variables": [],
+      "jobs": [
+        {
+          "name": "build",
+          "environment_variables": [],
+          "tabs": [],
+          "resources": [],
+          "artifacts": [],
+          "properties": [],
+          "run_instance_count": null,
+          "timeout": 0,
+          "tasks": [
+            {
+              "type": "exec",
+              "command": "/bin/bash",
+              "arguments": [
+                "-c",
+                "ruby backup_prod_data.rb"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
